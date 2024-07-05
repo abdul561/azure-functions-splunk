@@ -134,7 +134,6 @@
                         },
                         "visible": true
                     },
-            
                     {
                         "name": "ehPolicyKeyApi",
                         "type": "Microsoft.Solutions.ArmApiControl",
