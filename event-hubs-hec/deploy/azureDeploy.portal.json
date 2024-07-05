@@ -88,19 +88,26 @@
                         }
                     },
                     {
-                        "name": "ehNamespaceTextBox",
-                        "type": "Microsoft.Common.TextBox",
+                        "name": "ehNamespaceDropDown",
+                        "type": "Microsoft.Common.DropDown",
                         "label": "Event Hub Namespace",
-                        "toolTip": "Enter the name of the Event Hub Namespace containing the Event Hubs to monitor.",
-                        "defaultValue": "",
+                        "toolTip": "Event Hub Namespace containing the Event Hubs to monitor.",
+                        "filter": false,
                         "constraints": {
-                            "required": true,
-                            "regex": "^[a-zA-Z0-9_-]+$",
-                            "validationMessage": "Enter a valid Event Hub Namespace (letters, numbers, underscores, and hyphens are allowed)."
+                            "allowedValues": [
+                                {
+                                    "label": "Namespace 1",
+                                    "value": "pf-global-splunk"
+                                },
+                                {
+                                    "label": "Namespace 2",
+                                    "value": "pf-uaenorth-splunk"
+                                }
+                            ],
+                            "required": true
                         },
                         "visible": true
                     },
-                    
                     
                     {
                         "name": "ehPolicyApi",
