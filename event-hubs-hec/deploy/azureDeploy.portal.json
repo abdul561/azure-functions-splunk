@@ -77,45 +77,78 @@
                         "name": "ehNsSection",
                         "type": "Microsoft.Common.Section",
                         "label": "Event Hub Namespace Details",
-                        "elements": [
-                            {
-                                "name": "ehNamespaceDropDown",
-                                "type": "Microsoft.Common.DropDown",
-                                "label": "Event Hub Namespace",
-                                "toolTip": "Event Hub Namespace containing the Event Hubs to monitor.",
-                                "constraints": {
-                                    "allowedValues": [
-                                        {
-                                            "label": "pf-global-splunk",
-                                            "value": "pf-global-splunk"
-                                        },
-                                        {
-                                            "label": "pf-uaenorth-splunk",
-                                            "value": "pf-uaenorth-splunk"
-                                        }
-                                    ],
-                                    "required": true
+                        "elements": []
+                    },
+                    {
+                        "name": "ehNamespaceApi",
+                        "type": "Microsoft.Solutions.ArmApiControl",
+                        "request": {
+                            "method": "GET",
+                            "path": "[concat(subscription().id, '/providers/Microsoft.EventHub/namespaces?api-version=2021-11-01')]"
+                        }
+                    },
+                    {
+                        "name": "ehNamespaceDropDown",
+                        "type": "Microsoft.Common.DropDown",
+                        "label": "Event Hub Namespace",
+                        "toolTip": "Event Hub Namespace containing the Event Hubs to monitor.",
+                        "filter": false,
+                        "constraints": {
+                            "allowedValues": [
+                                {
+                                    "label": "pf-global-splunk",
+                                    "value": "pf-global-splunk"
                                 },
-                                "visible": true
-                            },
-                            {
-                                "name": "ehPolicyDropDown",
-                                "type": "Microsoft.Common.DropDown",
-                                "label": "Event Hub Access Policy",
-                                "toolTip": "Specify a policy with a 'Listen' or greater claim.",
-                                "defaultValue": "RootManageSharedAccessKey",
-                                "constraints": {
-                                    "allowedValues": [
-                                        {
-                                            "label": "RootManageSharedAccessKey",
-                                            "value": "RootManageSharedAccessKey"
-                                        }
-                                    ],
-                                    "required": true
-                                },
-                                "visible": true
-                            }
-                        ]
+                                {
+                                    "label": "pf-uaenorth-splunk",
+                                    "value": "pf-uaenorth-splunk"
+                                }
+                            ],
+                            "required": true
+                        },
+                        "visible": true
+                    },
+                    
+                    {
+                        "name": "ehPolicyApi",
+                        "type": "Microsoft.Solutions.ArmApiControl",
+                        "request": {
+                            "method": "GET",
+                            "path": "[concat(steps('appSettings').ehNamespaceDropDown, '/authorizationRules', '?api-version=2021-11-01')]"
+                        }
+                    },
+                    {
+                        "name": "ehPolicyDropDown",
+                        "type": "Microsoft.Common.DropDown",
+                        "label": "Event Hub Access Policy",
+                        "toolTip": "Specify a policy with a 'Listen' or greater claim.",
+                        "defaultValue": "RootManageSharedAccessKey",
+                        "constraints": {
+                            "allowedValues": [
+                                {
+                                    "label": "RootManageSharedAccessKey",
+                                    "value": "RootManageSharedAccessKey"
+                                }
+                            ],
+                            "required": true
+                        },
+                        "visible": true
+                    },
+                    {
+                        "name": "ehPolicyKeyApi",
+                        "type": "Microsoft.Solutions.ArmApiControl",
+                        "request": {
+                            "method": "POST",
+                            "path": "[concat(steps('appSettings').ehNamespaceDropDown, '/authorizationRules/', steps('appSettings').ehPolicyDropDown, '/listKeys', '?api-version=2021-11-01')]"
+                        }
+                    },
+                    {
+                        "name": "ehApi",
+                        "type": "Microsoft.Solutions.ArmApiControl",
+                        "request": {
+                            "method": "GET",
+                            "path": "[concat(steps('appSettings').ehNamespaceDropDown, '/eventhubs', '?api-version=2021-11-01')]"
+                        }
                     },
                     {
                         "name": "splunkHECSection",
@@ -124,9 +157,9 @@
                         "elements": [
                             {
                                 "name": "splunkHECEndpoint",
-                                "type": "Microsoft.Common.TextBox",
                                 "label": "Splunk HEC Endpoint",
                                 "toolTip": "URL for the Splunk HTTP Event Collector.",
+                                "type": "Microsoft.Common.TextBox",
                                 "placeholder": "https://<YOUR SPLUNK URL>:<PORT>/services/collector/event",
                                 "constraints": {
                                     "required": true
@@ -134,15 +167,16 @@
                             },
                             {
                                 "name": "splunkHECToken",
-                                "type": "Microsoft.Common.TextBox",
                                 "label": "Splunk HEC Token",
                                 "toolTip": "Splunk HTTP Event Collector Token.",
+                                "type": "Microsoft.Common.TextBox",
                                 "constraints": {
                                     "required": true
                                 }
                             }
                         ]
                     },
+
                     {
                         "name": "repoSection",
                         "type": "Microsoft.Common.Section",
@@ -150,9 +184,9 @@
                         "elements": [
                             {
                                 "name": "repoURL",
-                                "type": "Microsoft.Common.TextBox",
                                 "label": "Repository URL",
                                 "toolTip": "URL for the function code.",
+                                "type": "Microsoft.Common.TextBox",
                                 "defaultValue": "https://github.com/splunk/azure-functions-splunk.git",
                                 "constraints": {
                                     "required": true
@@ -160,96 +194,77 @@
                             },
                             {
                                 "name": "repoBranch",
-                                "type": "Microsoft.Common.TextBox",
                                 "label": "Branch",
                                 "defaultValue": "master",
+                                "type": "Microsoft.Common.TextBox",
                                 "constraints": {
                                     "required": true
                                 }
                             },
                             {
                                 "name": "repoProject",
-                                "type": "Microsoft.Common.TextBox",
                                 "label": "Project",
                                 "toolTip": "If the source code for the function resides in a subdirectory, specify the subdirectory containing the code.",
-                                "defaultValue": "event-hubs-hec"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "ehActivityLogs",
-                        "label": "Activity Logs",
-                        "elements": [
-                            {
-                                "name": "ehActivityEnable",
-                                "type": "Microsoft.Common.CheckBox",
-                                "label": "Enable Activity Log Event Hub Functions"
-                            },
-                            {
-                                "name": "ehActivityDropDown",
-                                "type": "Microsoft.Common.DropDown",
-                                "label": "Activity Log Event Hub",
-                                "toolTip": "Event Hub containing activity data.",
-                                "defaultValue": "insights-activity-logs",
-                                "constraints": {
-                                    "allowedValues": [
-                                        {
-                                            "label": "EventHub1",
-                                            "value": "eventhub1"
-                                        },
-                                        {
-                                            "label": "EventHub2",
-                                            "value": "eventhub2"
-                                        }
-                                    ],
-                                    "required": "true"
-                                },
-                                "visible": "true"
-                            },
-                            {
-                                "name": "ehActivityConsumerGroupApi",
-                                "type": "Microsoft.Solutions.ArmApiControl",
-                                "request": {
-                                    "method": "GET",
-                                    "path": "[concat(steps('appSettings').ehNamespaceDropDown, '/eventhubs/', steps('ehActivityLogs').ehActivityDropDown, '/consumergroups', '?api-version=2017-04-01')]"
-                                }
-                            },
-                            {
-                                "name": "ehActivityConsumerGroupDropDown",
-                                "type": "Microsoft.Common.DropDown",
-                                "label": "Activity Log Consumer Group",
-                                "constraints": {
-                                    "allowedValues": [
-                                        {
-                                            "label": "ConsumerGroup1",
-                                            "value": "consumergroup1"
-                                        },
-                                        {
-                                            "label": "ConsumerGroup2",
-                                            "value": "consumergroup2"
-                                        }
-                                    ],
-                                    "required": "true"
-                                },
-                                "visible": "true"
-                            },
-                            {
-                                "name": "ehActivitySourcetype",
                                 "type": "Microsoft.Common.TextBox",
-                                "label": "Activity Log Sourcetype",
-                                "toolTip": "Splunk sourcetype for activity logs.",
-                                "defaultValue": "azure:activity:log",
-                                "placeholder": "azure:activity:log",
-                                "constraints": {
-                                    "required": "true"
-                                },
-                                "visible": "true"
+                                "defaultValue": "event-hubs-hec"
                             }
                         ]
                     }
                 ]
             },
-            
+            {
+                "name": "ehActivityLogs",
+                "label": "Activity Logs",
+                "elements": [
+                    {
+                        "name": "ehActivityEnable",
+                        "type": "Microsoft.Common.CheckBox",
+                        "label": "Enable Activity Log Event Hub Functions"
+                    },
+                    {
+                        "name": "ehActivityDropDown",
+                        "type": "Microsoft.Common.DropDown",
+                        "label": "Activity Log Event Hub",
+                        "toolTip": "Event Hub containing activity data.",
+                        "defaultValue": "insights-activity-logs",
+                        "constraints": {
+                            "allowedValues": "[map(steps('appSettings').ehApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
+                            "required": "[steps('ehActivityLogs').ehActivityEnable]"
+                        },
+                        "visible": "[steps('ehActivityLogs').ehActivityEnable]"
+                    },
+                    {
+                        "name": "ehActivityConsumerGroupApi",
+                        "type": "Microsoft.Solutions.ArmApiControl",
+                        "request": {
+                            "method": "GET",
+                            "path": "[concat(steps('appSettings').ehNamespaceDropDown, '/eventhubs/', steps('ehActivityLogs').ehActivityDropDown, '/consumergroups', '?api-version=2017-04-01')]"
+                        }
+                    },
+                    {
+                        "name": "ehActivityConsumerGroupDropDown",
+                        "type": "Microsoft.Common.DropDown",
+                        "label": "Activity Log Consumer Group",
+                        "constraints": {
+                            "allowedValues": "[map(steps('ehActivityLogs').ehActivityConsumerGroupApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
+                            "required": "[steps('ehActivityLogs').ehActivityEnable]"
+                        },
+                        "visible": "[steps('ehActivityLogs').ehActivityEnable]"
+                    },
+                    {
+                        "name": "ehActivitySourcetype",
+                        "label": "Activity Log Sourcetype",
+                        "toolTip": "Splunk sourcetype for activity logs.",
+                        "type": "Microsoft.Common.TextBox",
+                        "defaultValue": "azure:activity:log",
+                        "placeholder": "azure:activity:log",
+                        "constraints": {
+                            "required": "[steps('ehActivityLogs').ehActivityEnable]"
+                        },
+                        "visible": "[steps('ehActivityLogs').ehActivityEnable]"
+                    }
+                ]
+            },
             {
                 "name": "ehAADLogs",
                 "label": "Azure Active Directory",
