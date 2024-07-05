@@ -88,26 +88,19 @@
                         }
                     },
                     {
-                        "name": "ehNamespaceDropDown",
-                        "type": "Microsoft.Common.DropDown",
+                        "name": "ehNamespaceTextBox",
+                        "type": "Microsoft.Common.TextBox",
                         "label": "Event Hub Namespace",
-                        "toolTip": "Event Hub Namespace containing the Event Hubs to monitor.",
-                        "filter": true,
+                        "toolTip": "Enter the name of the Event Hub Namespace containing the Event Hubs to monitor.",
+                        "defaultValue": "",
                         "constraints": {
-                            "allowedValues": [
-                                {
-                                    "label": "Namespace 1",
-                                    "value": "namespace1"
-                                },
-                                {
-                                    "label": "Namespace 2",
-                                    "value": "namespace2"
-                                }
-                            ],
-                            "required": true
+                            "required": true,
+                            "regex": "^[a-zA-Z0-9_-]+$",
+                            "validationMessage": "Enter a valid Event Hub Namespace (letters, numbers, underscores, and hyphens are allowed)."
                         },
                         "visible": true
                     },
+                    
                     
                     {
                         "name": "ehPolicyApi",
