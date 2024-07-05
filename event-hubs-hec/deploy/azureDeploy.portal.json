@@ -122,12 +122,19 @@
                         "type": "Microsoft.Common.DropDown",
                         "label": "Event Hub Access Policy",
                         "toolTip": "Specify a policy with a 'Listen' or greater claim.",
+                        "defaultValue": "RootManageSharedAccessKey",
                         "constraints": {
-                            "allowedValues": "[map(steps('appSettings').ehPolicyApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.name, '\"}')))]",
+                            "allowedValues": [
+                                {
+                                    "label": "RootManageSharedAccessKey",
+                                    "value": "RootManageSharedAccessKey"
+                                }
+                            ],
                             "required": true
                         },
                         "visible": true
                     },
+            
                     {
                         "name": "ehPolicyKeyApi",
                         "type": "Microsoft.Solutions.ArmApiControl",
