@@ -94,11 +94,21 @@
                         "toolTip": "Event Hub Namespace containing the Event Hubs to monitor.",
                         "filter": true,
                         "constraints": {
-                            "allowedValues": "[map(steps('appSettings').ehNamespaceApi.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]",
+                            "allowedValues": [
+                                {
+                                    "label": "Namespace 1",
+                                    "value": "namespace1"
+                                },
+                                {
+                                    "label": "Namespace 2",
+                                    "value": "namespace2"
+                                }
+                            ],
                             "required": true
                         },
                         "visible": true
                     },
+                    
                     {
                         "name": "ehPolicyApi",
                         "type": "Microsoft.Solutions.ArmApiControl",
